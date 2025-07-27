@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriBot - Intelligent Chatbot for Farmers</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        /* Header Styles */
+        header {
+            background: white;
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .logo span:first-child {
+            color: #ff6b00;
+        }
+
+        .logo span:last-child {
+            color: #2ea44f;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #333;
+            margin-left: 2rem;
+            font-weight: 500;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9)), url('/api/placeholder/1920/1080');
+            min-height: 100vh;
+            padding: 8rem 5% 4rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2rem;
+        }
+
+        .hero-content {
+            flex: 1;
+            max-width: 600px;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .hero-image {
+            flex: 1;
+            max-width: 500px;
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: auto;
+        }
+
+        /* Buttons */
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .button {
+            padding: 0.8rem 2rem;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .button-primary {
+            background: #2ea44f;
+            color: white;
+        }
+
+        .button-secondary {
+            background: #ff6b00;
+            color: white;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 4rem 5%;
+            background: #f8f9fa;
+        }
+
+        .features h2 {
+            text-align: center;
+            margin-bottom: 3rem;
+            font-size: 2.5rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Chat Widget */
+        .chat-widget {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #6b46c1;
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            max-width: 300px;
+        }
+
+        .chat-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .chat-messages {
+            min-height: 200px;
+            max-height: 300px;
+            overflow-y: auto;
+            background: white;
+            border-radius: 5px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .chat-input button {
+            background: #4c1d95;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Message styling */
+        .user-message {
+            background-color: #e9ecef;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            align-self: flex-end;
+            text-align: right;
+        }
+
+        .bot-message {
+            background-color: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border-left: 3px solid #6b46c1;
+        }
+
+        /* Typing indicator */
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            background-color: #f0f0f0;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            width: fit-content;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            margin: 0 2px;
+            background-color: #6b46c1;
+            border-radius: 50%;
+            display: inline-block;
+            animation: typing 1s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .button-group {
+                justify-content: center;
+            }
+
+            nav {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <span>Agri</span><span>Bot</span>
+        </div>
+        <nav>
+            <a href="#home">Home</a>
+            <a href="#about">About Us</a>
+            <a href="#prediction">Prediction</a>
+            <a href="#chatbot">Chatbot</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>An Intelligent Chatbot for Farmers</h1>
+            <p>Complete End to End chatbot for Farmer Guidance with Multiple Recommendation with Predictions</p>
+            <div class="button-group">
+                <a href="{% url 'chatbot' %}" class="button button-primary">Try Chatbot</a>
+                <a href="{% url 'predict_page' %}" class="button button-secondary">Get Prediction</a>
+            </div>
+        </div>
+        <!-- <div class="hero-image">
+            <img src="/api/placeholder/500/500" alt="AgriBot Assistant">
+        </div> -->
+    </section>
+
+    <section class="features">
+        <h2>Our Features</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h3>Chatbot Understanding</h3>
+                <p>Advanced AI chatbot that understands farmer queries in natural language</p>
+            </div>
+            <div class="feature-card">
+                <h3>Disease Prediction</h3>
+                <p>Predict crop diseases early using machine learning algorithms</p>
+            </div>
+            <div class="feature-card">
+                <h3>Crop Suggestions</h3>
+                <p>Get personalized crop recommendations based on soil and climate</p>
+            </div>
+            <div class="feature-card">
+                <h3>Fertilizer Guide</h3>
+                <p>Smart fertilizer recommendations for optimal crop growth</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="chat-widget">
+        <div class="chat-header">
+            <i class="fas fa-robot"></i>
+            <h3>Chat Support</h3>
+        </div>
+        <div class="chat-messages">
+            <p class="bot-message">Hi, I'm AgriBot! Ask me anything about crops, soil management, or farming practices.</p>
+        </div>
+        <div class="chat-input">
+            <input type="text" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        // Store conversation history
+        let conversationHistory = [
+            {
+                role: 'assistant',
+                content: "Hi, I'm AgriBot! Ask me anything about crops, soil management, or farming practices."
+            }
+        ];
+
+        // Connect event listeners when the DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Connect the button click event
+            const sendButton = document.querySelector('.chat-input button');
+            sendButton.addEventListener('click', sendMessage);
+            
+            // Connect the Enter key press event
+            const inputField = document.querySelector('.chat-input input');
+            inputField.addEventListener('keypress', handleKeyPress);
+        });
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function showTypingIndicator() {
+            const chatMessages = document.querySelector('.chat-messages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'typing-indicator';
+            typingDiv.id = 'typingIndicator';
+            
+            for (let i = 0; i < 3; i++) {
+                const dot = document.createElement('span');
+                typingDiv.appendChild(dot);
+            }
+            
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const typingIndicator = document.getElementById('typingIndicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+
+        async function sendMessage() {
+            const chatInput = document.querySelector('.chat-input input');
+            const chatMessages = document.querySelector('.chat-messages');
+            const userMessage = chatInput.value.trim();
+            
+            if (!userMessage) return;
+            
+            // Display user message
+            const userMessageElement = document.createElement('p');
+            userMessageElement.className = 'user-message';
+            userMessageElement.textContent = userMessage;
+            chatMessages.appendChild(userMessageElement);
+            
+            // Clear input field
+            chatInput.value = '';
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Add to conversation history
+            conversationHistory.push({
+                role: 'user',
+                content: userMessage
+            });
+            
+            try {
+                const response = await fetch(
+                    'https://openrouter.ai/api/v1/chat/completions',
+                    {
+                        method: 'POST',
+                        headers: {
+                            Authorization: 'Bearer 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',
+                            'HTTP-Referer': 'https://www.sitename.com',
+                            'X-Title': 'SiteName',
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            model: 'deepseek/deepseek-r1:free',
+                            messages: conversationHistory,
+                        }),
+                    },
+                );
+                
+                const data = await response.json();
+                
+                // Remove typing indicator
+                removeTypingIndicator();
+                
+                const botResponse = data.choices?.[0]?.message?.content || 'Sorry, I encountered an issue processing your request.';
+                
+                // Create bot message element
+                const botMessageElement = document.createElement('p');
+                botMessageElement.className = 'bot-message';
+                botMessageElement.innerHTML = marked.parse(botResponse);
+                
+                // Add message to chat
+                chatMessages.appendChild(botMessageElement);
+                
+                // Add to conversation history
+                conversationHistory.push({
+                    role: 'assistant',
+                    content: botResponse
+                });
+                
+            } catch (error) {
+                // Remove typing indicator
+                removeTypingIndicator();
+                
+                // Show error message
+                const errorMessage = document.createElement('p');
+                errorMessage.className = 'bot-message';
+                errorMessage.textContent = `Sorry, I encountered an error: ${error.message}. Please try again later.`;
+                chatMessages.appendChild(errorMessage);
+            }
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    </script>
+</body>
+</html>
